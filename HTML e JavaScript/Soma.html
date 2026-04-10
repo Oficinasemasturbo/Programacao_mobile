@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <input type="text" id="N1">
+    <input type="text" id="N2">
+    <button id="btn_somar" onclick="somar()">Somar</button>
+    <script>
+        function somar() {
+            let N1 = Number(document.getElementById("N1").value);
+            let N2 = Number(document.getElementById("N2").value);
+            let soma = N1 + N2;
+            alert("A soma é:    " + soma);
+        }
+    </script>
+    <button id="btn_subtrair" onclick="subtrair()">Subtrair</button>
+    <script>
+        function subtrair() {
+            let N1 = Number(document.getElementById("N1").value);
+            let N2 = Number(document.getElementById("N2").value);
+            let soma = N1 - N2;
+            alert("A subtração é:    " + soma);
+        }
+    </script>
+        <button id="btn_multi" onclick="multi()">Multiplicar</button>
+    <script>
+        function multi() {
+            let N1 = Number(document.getElementById("N1").value);
+            let N2 = Number(document.getElementById("N2").value);
+            let soma = N1 * N2;
+            alert("A multiplicação é:    " + soma);
+        }
+    </script>
+        <button id="btn_div" onclick="div()">Dividir</button>
+    <script>
+        function div() {
+            let N1 = Number(document.getElementById("N1").value);
+            let N2 = Number(document.getElementById("N2").value);
+            let soma = N1 / N2;
+            alert("A divisão é:    " + soma);
+        }
+    </script>
+</body >
+</html >
