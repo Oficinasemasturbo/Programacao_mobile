@@ -1,0 +1,78 @@
+<html> 
+<head>
+    <title>I see you...</title>
+    <style>
+        body {
+            background-color: black;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        img {
+            cursor: pointer;
+        }
+
+        .btn_baixar {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <img id="imagem" src="corao-ezgif.com-instagif.gif" width="400" height="700">
+
+    <audio id="som_efeito" src="flesh_qvZUN3zY.mp3"></audio>
+
+    <audio id="musica_fundo" src="pumpum.m4a" loop></audio>
+
+    <script>
+    let contador = 0;
+    const img = document.getElementById("imagem");
+    const somEfeito = document.getElementById("som_efeito");
+    const musicaFundo = document.getElementById("musica_fundo");
+
+    // Função para tocar a música de fundo
+    function iniciarMusica() {
+        musicaFundo.play().then(() => {
+            // Se a música começar com sucesso, removemos o evento de movimento de mouse
+            window.removeEventListener('mousemove', iniciarMusica);
+        }).catch(e => {
+            // Caso o navegador ainda bloqueie, ele tentará de novo no próximo movimento
+            console.log("Aguardando interação real...");
+        });
+    }
+
+    // Toca assim que o mouse se mexer na janela
+    window.addEventListener('mousemove', iniciarMusica);
+
+    img.onclick = function () {
+        // Garante que a música toque se o movimento do mouse falhar mas o clique ocorrer
+        iniciarMusica();
+
+        contador++;
+
+        // Som de efeito do clique
+        somEfeito.currentTime = 0;
+        somEfeito.play();
+
+        if (contador === 7) {
+            img.src = "TheMIMIC.gif";
+        }
+    };
+    </script>
+
+    <a href="26-05-2025 - Teste 43 (bem Sucedido).txt" download
+        style="position: fixed; bottom: 20px; right: 20px; padding: 15px; background: rgb(0, 0, 0);">
+    </a>
+
+</body>
+</html>

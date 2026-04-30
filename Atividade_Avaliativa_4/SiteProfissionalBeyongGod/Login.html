@@ -1,0 +1,52 @@
+<html>
+<head>
+    <title>BG - Login</title>
+    <style>
+        body {
+            background-image: url("Backgroundsite.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center; 
+            align-items: center;     
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+<TABLE style="margin: auto; border: 1px solid rgb(97, 0, 0); color: rgb(197, 0, 0);" 
+BORDER CELLSPACING=2 CELLPADDING=2 WIDTH="50%" BGCOLOR="Black">
+<tr>
+<td colspan="6" style="text-align: center;">
+<b>Beyong|God</b>
+</td>
+</tr>
+<tr>
+    <td><A style="text-decoration: none; color: rgb(114, 1, 1);" href="BeyongGod.html"><b>Sobre nós</b></td>
+    <td><A style="text-decoration: none; color: rgb(114, 1, 1);" href="jogos.html"><b>Jogos</b></A></td>
+    <td><A style="text-decoration: none; color: rgb(114, 1, 1);" href="mods.html"><b>Mods</b></A></td>
+    <td><A style="text-decoration: none; color: rgb(114, 1, 1);" href="projetos.html"><b>Projetos</b></A></td>
+    <td><A style="text-decoration: none; color: rgb(114, 1, 1);" href="candidaturas.html"><b>Candidaturas</b></A></td>
+    <td><A style="text-decoration: none; color: rgb(114, 1, 1);" href="Login.html"><b>Login</b></A></td>
+</tr>
+<tr><td colspan="8" style="color: white;">
+    <P>Nome de Usuário:</P>
+    <input type="text" id="NU">
+    <br>
+    <br>
+    <p>Senha:</p>
+    <input type="text" id="S">
+    <button id="btn_enviar" onclick="entrar()">entrar</button></td></tr>
+</TABLE>
+<script>
+function entrar() {
+    let NU = document.getElementById("NU").value;
+    let S = document.getElementById("S").value;
+
+    alert("Logando...");
+}
+</script>
+</body>
+</html>

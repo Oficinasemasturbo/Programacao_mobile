@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BG - BeyongGod</title>
+
+<style>
+body {
+    background-image: url("Backgroundsite.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0;
+}
+
+/* Logo */
+.topo {
+    width: 60%;
+    text-align: center;
+    margin-top: 20px;
+}
+
+#imagem {
+    max-width: 70%;
+    height: auto;
+    cursor: pointer;
+}
+
+/* Tabela */
+table {
+    width: 90%;
+    max-width: 900px;
+    border: 2px solid rgb(97, 0, 0);
+    color: rgb(175, 0, 0);
+    background-color: black;
+}
+
+/* Menu */
+.menu td {
+    text-align: center;
+}
+
+.menu a {
+    text-decoration: none;
+    color: rgb(114, 1, 1);
+    font-weight: bold;
+}
+
+/* Texto */
+.texto {
+    color: white;
+    padding: 10px;
+}
+
+/* Riscado */
+.riscado {
+    text-decoration: line-through;
+    text-decoration-thickness: 8px;
+    color: rgb(75, 0, 0);
+}
+
+/* Botão */
+#btnDownload {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: black;
+    color: rgb(0, 0, 0);
+    border: 2px solid rgb(0, 0, 0);
+    cursor: pointer;
+}
+
+/* 📱 Responsividade */
+@media (max-width: 600px) {
+    .menu tr {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .menu td {
+        display: block;
+        padding: 8px;
+        border-top: 5px solid rgb(97, 0, 0);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="topo">
+    <img src="BGlogosemfundo.png" id="imagem">
+</div>
+
+<TABLE style="margin: auto; border: 1px solid rgb(97, 0, 0); color: rgb(197, 0, 0);" BORDER CELLSPACING=2
+        CELLPADDING=2 WIDTH="50%" BGCOLOR="Black">
+    <tr>
+        <td colspan="6" style="text-align: center;">
+            <b>Beyong|God</b>
+        </td>
+    </tr>
+
+    <tr class="menu">
+        <td><a href="BeyongGod.html">Sobre nós</a></td>
+        <td><a href="jogos.html">Jogos</a></td>
+        <td><a href="mods.html">Mods</a></td>
+        <td><a href="projetos.html">Projetos</a></td>
+        <td><a href="candidaturas.html">Candidaturas</a></td>
+        <td><a href="Login.html">Login</a></td>
+    </tr>
+
+    <tr>
+         <td colspan="6" style="color: white;">Nossa empresa é uma empresa de jogos focadosa em terror, mistério e ação, 
+        mas estamos em busca de expandir nossas áreas de ação, indo mais longe dentro, não só da insudstria de jogos, mas 
+        da de tecnologia também, nossos funcionários trabalham constantemente para a melhora do site e para a busca de avanços.
+
+        <br><br>
+
+        Nossa empresa foi criada pelos nossos queridos fundadores <span class = "riscado">Edward Ralen</span> e 
+        <span class = "riscado">John Bevehard</span>, eles fundaram a empresa e selecionaram a dedo todo o time primordial, 
+        graças a eles podemos compartilhar essas incríveis histórias e experiências com o público, os dois fundadores se 
+        conheceram em uma viagem para o sítio de um amigo em comum e ali, formou-se uma amizade, que mais tarde iria fundar 
+        a Beyong|God, atuaimente nossos criadores se encontram fora de nossa empresa trabalhando em projetos pessoais, mas 
+        a essência deles continua conosco, em cada parte de nossa empresa.
+
+        <br><br>
+
+        Nossa equipe é organizada e bem desenvolvida, trabalhando arduamente todos os dias para entregar a melhor experiência 
+        para todos os nossos clientes, tanto em nosso site quanto em nossos jogos, entregando sempre o melhor do melhor, nossos 
+        projetos, jogos e mods sempre buscam ser revolucionários e trazer novidades para a industria de jogos e tecnologia, nós 
+        estudamos constantemente para melhorar nossos produtos e sempre estamos de olho no feedback dos fãs.
+        </td>
+    </tr>
+</table>
+
+<a id="downloadLink" href="JornalBrasil28-03-2024.pdf" download>
+    <button id="btnDownload"></button>
+</a>
+
+<audio id="som_efeito" src="Morsecode.wav"></audio>
+
+<script>
+let contador = 0;
+const img = document.getElementById("imagem");
+const somEfeito = document.getElementById("som_efeito");
+const btnDownload = document.getElementById("btnDownload");
+
+img.onclick = function() {
+    contador++;
+    somEfeito.currentTime = 0;
+    somEfeito.play();
+
+    if (contador >= 1) {
+        btnDownload.style.display = "block";
+    }
+};
+</script>
+
+</body>
+</html>

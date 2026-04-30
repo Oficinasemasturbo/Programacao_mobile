@@ -1,0 +1,13 @@
+O que falta fazer:
+
+Fazer primeiro:
+
+1- Editar fotos dos fundadores; (eu e vini)
+
+2- Criar vídeo com a conversa e jogar no drive;
+
+3- Criar vídeo com a criatura aparecendo e fechar o site depois de tantos cliques;
+
+Depois:
+
+5- Fazer a área de Login com banco de dados e dps de logar mudar o site;

@@ -1,0 +1,73 @@
+<html>
+<head>
+    <title>BG - Candidaturas</title>
+    <style>
+        body {
+            background-image: url("Backgroundsite.png");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex;
+            justify-content: center; 
+            align-items: center;     
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+<TABLE style="margin: auto; border: 1px solid rgb(97, 0, 0); color: rgb(197, 0, 0);" 
+BORDER CELLSPACING=2 CELLPADDING=2 WIDTH="50%" BGCOLOR="Black">
+<tr>
+<td colspan="8" style="text-align: center;">
+<b>Beyong|God</b>
+</td>
+</tr>
+<tr>
+    <td colspan="2"><A style="text-decoration: none; color: rgb(114, 1, 1);" href="BeyongGod.html"><b>Sobre nós</b></td>
+    <td colspan="1"><A style="text-decoration: none; color: rgb(114, 1, 1);" href="jogos.html"><b>Jogos</b></A></td>
+    <td colspan="1"><A style="text-decoration: none; color: rgb(114, 1, 1);" href="mods.html"><b>Mods</b></A></td>
+    <td colspan="1"><A style="text-decoration: none; color: rgb(114, 1, 1);" href="projetos.html"><b>Projetos</b></A></td>
+    <td colspan="2"><A style="text-decoration: none; color: rgb(114, 1, 1);" href="candidaturas.html"><b>Candidaturas</b></A></td>
+    <td colspan="2"><A style="text-decoration: none; color: rgb(114, 1, 1);" href="Login.html"><b>Login</b></A></td>
+</tr>
+<tr>
+    <td><A style="text-decoration: none; color: rgb(168, 0, 0);" href="CandidaturaP.html"><b>Programação</b></td>
+    <td><A style="text-decoration: none; color: rgb(168, 0, 0);" href="cgd.html"><b>Game Design</b></A></td>
+    <td><A style="text-decoration: none; color: rgb(168, 0, 0);" href="Candic.html"><b>Criativa</b></A></td>
+    <td><A style="text-decoration: none; color: rgb(168, 0, 0);" href="Cm.html"><b>Marketing</b></A></td>
+    <td><A style="text-decoration: none; color: rgb(168, 0, 0);" href="cam.html"><b>Arte e Modelagem</b></A></td>
+    <td><A style="text-decoration: none; color: rgb(168, 0, 0);" href="ca.html"><b>Áudio</b></A></td>
+    <td><A style="text-decoration: none; color: rgb(168, 0, 0);" href="cgc.html"><b>Gestão de Comunidade</b></A></td>
+    <td><A style="text-decoration: none; color: rgb(168, 0, 0);" href="CS.html"><b>Segurança</b></A></td>
+</tr>
+<tr><td colspan="8" style="color: white;">
+    Você vai trabalhar na área de Marketing, mexendo na divulgação, tanto dos jogos quanto da empresa em si, e você 
+    receberá o treinamento necessário para se encaixar e acompanhar a equipe, o salário e outros benefícios serão 
+    informados após a aceitação do candidato.
+    <br>
+    <br>
+    <P>Email:</P>
+    <input type="text" id="email">
+    <br>
+    <br>
+    <p>Nome:</p>
+    <input type="text" id="nome">
+    <br>
+    <br>
+    <p>Currículo:</p>
+    <form action="upload.php" method="post" enctype="multipart/form-data">
+            <input type="file" name="curriculo" id="curriculo" accept=".doc,.docx" required>
+        </form>
+    <button id="btn_enviar" onclick="enviar()">enviar</button></td></tr>
+</TABLE>
+<script>
+function enviar() {
+    let email = document.getElementById("email").value;
+    let nome = document.getElementById("nome").value;
+
+    alert("Inscrição enviada");
+}
+</script>
+</body>
+</html>
