@@ -1,0 +1,103 @@
+<html>
+
+<head>
+    <title>Notas</title>
+    <style>
+        #customAlert {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            z-index: 1000;
+            text-align: center;
+            min-width: 300px;
+        }
+        #customAlert .message {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        #customAlert button {
+            padding: 8px 20px;
+            cursor: pointer;
+        }
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+        .text-red { color: #d32f2f; }
+        .text-green { color: #2e7d32; }
+        .text-orange { color: #f57c00; }
+    </style>
+</head>
+
+<body>
+    <input type="text" id="N1"><br>
+    <input type="text" id="N2"><br>
+    <input type="text" id="N3"><br>
+    <button onclick="media()">Tirar Média</button>
+
+    <div id="overlay"></div>
+    <div id="customAlert">
+        <div class="message" id="alertMessage"></div>
+        <button onclick="closeAlert()">OK</button>
+    </div>
+
+    <script>
+        function showAlert(message, colorClass) {
+            document.getElementById("alertMessage").innerHTML = message;
+            document.getElementById("alertMessage").className = "message " + colorClass;
+            document.getElementById("customAlert").style.display = "block";
+            document.getElementById("overlay").style.display = "block";
+        }
+        function closeAlert() {
+            document.getElementById("customAlert").style.display = "none";
+            document.getElementById("overlay").style.display = "none";
+        }
+function media() {
+             let N1 = document.getElementById("N1").value;
+             let N2 = document.getElementById("N2").value;
+             let N3 = document.getElementById("N3").value;
+             
+             if (N1 == "" || N2 == "" || N3 == "") {
+                 return;
+             }
+             
+             N1 = Number(N1);
+             N2 = Number(N2);
+             N3 = Number(N3);
+             
+             if (N1 < 0 || N1 > 10 || N2 < 0 || N2 > 10 || N3 < 0 || N3 > 10) {
+                 return;
+             }
+             
+             let soma = N1 + N2 + N3;
+             let media = soma / 3;
+             
+             if (media >= 7) {
+                 showAlert("A média é: " + media + " - Aprovado", "text-green");
+             }
+             else if (media >= 5) {
+                 showAlert("A média é: " + media + " - Recuperação", "text-orange");
+             } else {
+                 showAlert("A média é: " + media + " - Reprovado", "text-red");
+             }
+             document.getElementById("N1").value = "";
+             document.getElementById("N2").value = "";
+             document.getElementById("N3").value = "";
+         }
+    </script>
+
+</body>
+
+</html>
