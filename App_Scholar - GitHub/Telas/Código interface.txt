@@ -1,0 +1,1130 @@
+import React, { useState } from 'react';
+
+import {
+  StyleSheet,
+  Text,
+  Image,
+  TouchableOpacity,
+  View,
+  TextInput,
+  Alert,
+  ScrollView,
+} from 'react-native';
+
+
+// ======================================================
+// TELA DE ALUNOS
+// ======================================================
+
+function TelaAlunos({ voltar }) {
+
+  const [alunos, setAlunos] = useState([]);
+  const [nome, setNome] = useState('');
+  const [cpf, setCpf] = useState('');
+  const [idade, setIdade] = useState('');
+  const [idEditando, setIdEditando] = useState(null);
+
+  const [telaAluno, setTelaAluno] = useState('inicio');
+  const [alunoSelecionado, setAlunoSelecionado] = useState(null);
+
+  const API = 'http://10.121.184.57/gabriel/App_Scholar_Api';
+
+  // funções aqui...
+
+
+  // ======================================================
+  // CONSULTAR ALUNOS
+  // ======================================================
+
+  async function consultarAlunos() {
+
+  try {
+
+    console.log('Consultando alunos...');
+
+    const url = `${API}/consultar_alunos.php`;
+
+    console.log('URL:', url);
+
+    const resposta = await fetch(url);
+
+    console.log('Status HTTP:', resposta.status);
+
+    const texto = await resposta.text();
+
+    console.log('Resposta do servidor:', texto);
+
+    if (!resposta.ok) {
+
+      throw new Error(
+        `Servidor respondeu com HTTP ${resposta.status}`
+      );
+    }
+
+    if (!texto.trim()) {
+
+      throw new Error(
+        'O servidor retornou uma resposta vazia.'
+      );
+    }
+
+    let dados;
+
+    try {
+
+      dados = JSON.parse(texto);
+
+    } catch (erroJSON) {
+
+      console.log('Erro ao converter JSON:', erroJSON);
+
+      throw new Error(
+        'O servidor não retornou JSON válido.\n\n' +
+        texto
+      );
+    }
+
+    console.log('Alunos recebidos:', dados);
+
+    if (!Array.isArray(dados)) {
+
+      throw new Error(
+        'O servidor não retornou uma lista de alunos.'
+      );
+    }
+
+    setAlunos(dados);
+
+    setTelaAluno('lista');
+
+  } catch (erro) {
+
+    console.log('ERRO AO CONSULTAR:', erro);
+
+    Alert.alert(
+      'Erro ao consultar alunos',
+      erro.message
+    );
+  }
+}
+
+
+
+  // ======================================================
+  // INSERIR ALUNO
+  // ======================================================
+
+  async function inserirAluno() {
+
+    if (!nome.trim()) {
+
+      Alert.alert(
+        'Atenção',
+        'Digite o nome do aluno.'
+      );
+
+      return;
+    }
+
+    try {
+
+      const resposta = await fetch(
+        `${API}/inserir_aluno.php`,
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type': 'application/json',
+          },
+
+          body: JSON.stringify({
+            nome: nome,
+            cpf: cpf,
+            idade: idade
+              ? Number(idade)
+              : null,
+          }),
+        }
+      );
+
+      const dados = await resposta.json();
+
+      if (dados.sucesso) {
+
+        Alert.alert(
+          'Sucesso',
+          'Aluno cadastrado!'
+        );
+
+        setNome('');
+        setCpf('');
+        setIdade('');
+
+        consultarAlunos();
+
+      } else {
+
+        Alert.alert(
+          'Erro',
+          dados.mensagem || 'Erro ao cadastrar.'
+        );
+      }
+
+    } catch (erro) {
+
+      console.log(erro);
+
+      Alert.alert(
+        'Erro',
+        'Não foi possível conectar com o servidor.'
+      );
+    }
+  }
+
+
+  // ======================================================
+  // PREPARAR EDIÇÃO
+  // ======================================================
+
+  function prepararEdicao(aluno) {
+
+    setAlunoSelecionado(aluno);
+
+    setIdEditando(aluno.id);
+
+    setNome(aluno.nome);
+
+    setCpf(aluno.cpf || '');
+
+    setIdade(
+      aluno.idade
+        ? String(aluno.idade)
+        : ''
+    );
+
+    setTelaAluno('detalhes');
+  }
+
+
+  // ======================================================
+  // ATUALIZAR ALUNO
+  // ======================================================
+
+  async function atualizarAluno() {
+
+    if (!idEditando) {
+
+      Alert.alert(
+        'Atenção',
+        'Nenhum aluno selecionado.'
+      );
+
+      return;
+    }
+
+    try {
+
+      const resposta = await fetch(
+        `${API}/atualizar_aluno.php`,
+        {
+          method: 'POST',
+
+          headers: {
+            'Content-Type': 'application/json',
+          },
+
+          body: JSON.stringify({
+            id: idEditando,
+            nome: nome,
+            cpf: cpf,
+            idade: idade
+              ? Number(idade)
+              : null,
+          }),
+        }
+      );
+
+      const dados = await resposta.json();
+
+      if (dados.sucesso) {
+
+        Alert.alert(
+          'Sucesso',
+          'Aluno atualizado!'
+        );
+
+        setNome('');
+        setCpf('');
+        setIdade('');
+        setIdEditando(null);
+        setAlunoSelecionado(null);
+
+        consultarAlunos();
+
+      } else {
+
+        Alert.alert(
+          'Erro',
+          dados.mensagem || 'Erro ao atualizar.'
+        );
+      }
+
+    } catch (erro) {
+
+      console.log(erro);
+
+      Alert.alert(
+        'Erro',
+        'Não foi possível conectar com o servidor.'
+      );
+    }
+  }
+
+
+  // ======================================================
+  // INATIVAR ALUNO
+  // ======================================================
+
+  async function inativarAluno(id) {
+
+    Alert.alert(
+      'Inativar aluno',
+      'Tem certeza que deseja inativar este aluno?',
+
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+
+        {
+          text: 'Inativar',
+          style: 'destructive',
+
+          onPress: async () => {
+
+            try {
+
+              const resposta = await fetch(
+                `${API}/inativar_aluno.php`,
+                {
+                  method: 'POST',
+
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+
+                  body: JSON.stringify({
+                    id: id,
+                  }),
+                }
+              );
+
+              const dados = await resposta.json();
+
+              if (dados.sucesso) {
+
+                Alert.alert(
+                  'Sucesso',
+                  'Aluno inativado!'
+                );
+
+                setAlunoSelecionado(null);
+
+                consultarAlunos();
+
+              } else {
+
+                Alert.alert(
+                  'Erro',
+                  dados.mensagem || 'Erro ao inativar aluno.'
+                );
+              }
+
+            } catch (erro) {
+
+              console.log(erro);
+
+              Alert.alert(
+                'Erro',
+                'Não foi possível conectar com o servidor.'
+              );
+            }
+          },
+        },
+      ]
+    );
+  }
+
+
+  // ======================================================
+  // TELA INICIAL
+  // ======================================================
+
+  if (telaAluno === 'inicio') {
+
+    return (
+
+      <ScrollView
+        contentContainerStyle={styles.container}
+      >
+
+        <Text style={styles.titulo}>
+          Painel dos Alunos
+        </Text>
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={consultarAlunos}
+        >
+
+          <Text style={styles.textoBotao}>
+            Consultar Alunos
+          </Text>
+
+        </TouchableOpacity>
+
+
+        <TextInput
+          style={styles.input}
+          placeholder="Nome do aluno"
+          value={nome}
+          onChangeText={setNome}
+        />
+
+
+        <TextInput
+          style={styles.input}
+          placeholder="CPF"
+          value={cpf}
+          onChangeText={setCpf}
+          keyboardType="numeric"
+        />
+
+
+        <TextInput
+          style={styles.input}
+          placeholder="Idade"
+          value={idade}
+          onChangeText={setIdade}
+          keyboardType="numeric"
+        />
+
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={inserirAluno}
+        >
+
+          <Text style={styles.textoBotao}>
+            Inserir Aluno
+          </Text>
+
+        </TouchableOpacity>
+
+
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={voltar}
+        >
+
+          <Text style={styles.textoBotao}>
+            Voltar
+          </Text>
+
+        </TouchableOpacity>
+
+      </ScrollView>
+    );
+  }
+
+
+  // ======================================================
+  // TELA LISTA DE ALUNOS
+  // ======================================================
+
+  if (telaAluno === 'lista') {
+
+    return (
+
+      <ScrollView
+        contentContainerStyle={styles.container}
+      >
+
+        <Text style={styles.titulo}>
+          Lista de Alunos
+        </Text>
+
+
+        {alunos.length === 0 ? (
+
+          <Text style={{ marginTop: 20 }}>
+            Nenhum aluno cadastrado.
+          </Text>
+
+        ) : (
+
+          alunos.map((aluno) => (
+
+            <TouchableOpacity
+  key={aluno.id}
+  style={styles.cardAluno}
+  onPress={() => prepararEdicao(aluno)}
+>
+
+  <Text style={styles.nomeAluno}>
+    {aluno.nome}
+  </Text>
+
+  <Text>
+    ID: {aluno.id}
+  </Text>
+
+  <Text>
+    Status: {aluno.status === 'A' ? 'Ativo' : 'Inativo'}
+  </Text>
+
+  <Text
+    style={{
+      marginTop: 10,
+      color: '#1976D2',
+      fontWeight: 'bold',
+    }}
+  >
+    Toque para visualizar
+  </Text>
+
+</TouchableOpacity>
+
+          ))
+        )}
+
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={consultarAlunos}
+        >
+
+          <Text style={styles.textoBotao}>
+            Atualizar Lista
+          </Text>
+
+        </TouchableOpacity>
+
+
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setTelaAluno('inicio')}
+        >
+
+          <Text style={styles.textoBotao}>
+            Voltar
+          </Text>
+
+        </TouchableOpacity>
+
+      </ScrollView>
+    );
+  }
+}
+
+// ======================================================
+// APP PRINCIPAL
+// ======================================================
+
+export default function App() {
+
+  const [telaAtual, setTelaAtual] = useState('Home');
+
+  // --- TELA HOME ---
+  if (telaAtual === 'Home') {
+    return (
+      <View style={styles.container}>
+        <Image source={require('./assets/logo.png')} style={styles.logo} />
+        <Text style={styles.titulo}>APP Scholar</Text>
+        <Text style={styles.subtitulo}>Sistema Acadêmico Mobile</Text>
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('BDP1')}>
+          <Text style={styles.textoBotao}>Banco de Dados</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('Sobre')}>
+          <Text style={styles.textoBotao}>Sobre</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // --- TELA BDP1 ---
+  if (telaAtual === 'BDP1') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Painel do Banco</Text>
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('Alunos')}>
+          <Text style={styles.textoBotao}>Alunos</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('Professores')}>
+          <Text style={styles.textoBotao}>Professores</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('Coordenadores')}>
+          <Text style={styles.textoBotao}>Coordenadores</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('Cursos')}>
+          <Text style={styles.textoBotao}>Cursos</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('Matrículas')}>
+          <Text style={styles.textoBotao}>Matrículas</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('disciplinas')}>
+          <Text style={styles.textoBotao}>Disciplinas</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao}>Voltar para o Início</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.Proximo}
+          onPress={() => setTelaAtual('BDP2')}>
+          <Text style={styles.ProximoT}>--)</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // --- TELA BDP2 ---
+  if (telaAtual === 'BDP2') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Painel do Banco</Text>
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('Boletins')}>
+          <Text style={styles.textoBotao}>Boletins</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('Avaliações/Provas')}>
+          <Text style={styles.textoBotao}>Avaliações/Provas</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('Turmas')}>
+          <Text style={styles.textoBotao}>Turmas</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('PR')}>
+          <Text style={styles.textoBotao}>Pais ou Responsáveis</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('FE')}>
+          <Text style={styles.textoBotao}>Frequência Escolas</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.botao}
+          onPress={() => setTelaAtual('NA')}>
+          <Text style={styles.textoBotao}>Notas dos Alunos</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={styles.Anterior}
+          onPress={() => setTelaAtual('BDP1')}>
+          <Text style={styles.AnteriorT}> (-- </Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // --- TELA ALUNOS ---
+if (telaAtual === 'Alunos') {
+  return (
+    <TelaAlunos
+      voltar={() => setTelaAtual('BDP1')}
+    />
+  );
+}
+
+  // --- TELA FREQUEÊNCIA ESCOLAR ---
+  if (telaAtual === 'FE') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Painel das Frequências</Text>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Inserir</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Consultar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setTelaAtual('BDP2')}>
+          <Text style={styles.textoBotao}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // --- TELA PAIS OU RESPONSAVEIS ---
+  if (telaAtual === 'PR') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Painel dos Pais ou Responsáveis</Text>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Inserir</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Consultar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setTelaAtual('BDP2')}>
+          <Text style={styles.textoBotao}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // --- TELA Avaliações/Provas ---
+  if (telaAtual === 'Avaliações/Provas') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Painel das Avaliações/Provas</Text>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Inserir</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Consultar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setTelaAtual('BDP2')}>
+          <Text style={styles.textoBotao}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // --- TELA BOLETINS ---
+  if (telaAtual === 'Boletins') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Painel dos Boletins</Text>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Inserir</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Consultar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setTelaAtual('BDP2')}>
+          <Text style={styles.textoBotao}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // --- TELA DISCIPLINAS ---
+  if (telaAtual === 'disciplinas') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Painel das Disciplinas</Text>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Inserir</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Consultar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setTelaAtual('BDP1')}>
+          <Text style={styles.textoBotao}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // --- TELA CURSOS ---
+  if (telaAtual === 'Cursos') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Painel dos Cursos</Text>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Inserir</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Consultar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setTelaAtual('BDP1')}>
+          <Text style={styles.textoBotao}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // --- TELA PROFESSORES ---
+  if (telaAtual === 'Professores') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Painel dos Professores</Text>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Inserir</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Consultar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setTelaAtual('BDP1')}>
+          <Text style={styles.textoBotao}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // --- TELA COORDENADORES ---
+  if (telaAtual === 'Coordenadores') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Painel dos Coordenadores</Text>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Inserir</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Consultar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setTelaAtual('BDP1')}>
+          <Text style={styles.textoBotao}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // --- TELA MATRÍCULAS ---
+  if (telaAtual === 'Matrículas') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Painel das Matrículas</Text>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Inserir</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Consultar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setTelaAtual('BDP1')}>
+          <Text style={styles.textoBotao}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // --- TELA TURMAS ---
+  if (telaAtual === 'Turmas') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Painel das Turmas</Text>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Inserir</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Consultar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar2}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao2}>Editar</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setTelaAtual('BDP2')}>
+          <Text style={styles.textoBotao}>Voltar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
+  // --- TELA SOBRE ---
+  if (telaAtual === 'Sobre') {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.titulo}>Sobre o APP Scholar</Text>
+        <Text style={styles.caixa}>
+          Este site é uma forma de ter acesso ao BD_escola (Banco de Dados da
+          Escola), aqui você pode verificar, editar e adicionar informações no
+          Banco, tanto dos alunos quanto dos professores, das turmas, etc. Este
+          site foi criado por um aluno como teste e treino para Programação
+          Mobile.
+        </Text>
+        <TouchableOpacity
+          style={styles.botaoVoltar}
+          onPress={() => setTelaAtual('Home')}>
+          <Text style={styles.textoBotao}>Voltar para o Início</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#F5F5F5',
+  },
+  logo: {
+    width: 150,
+    height: 150,
+    marginBottom: 20,
+  },
+  titulo: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#1565C0',
+    textAlign: 'center',
+  },
+  subtitulo: {
+    fontSize: 18,
+    marginBottom: 40,
+    color: '#666',
+  },
+  botao: {
+    width: '80%',
+    backgroundColor: '#1976D2',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  botaoVoltar: {
+    width: '80%',
+    backgroundColor: '#444444',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  textoBotao: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  caixa: {
+    width: '80%',
+    backgroundColor: '#d3d3d3',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    alignItems: 'center',
+  },
+  botaoVoltar2: {
+    width: '80%',
+    backgroundColor: '#d3d3d3',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  textoBotao2: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  Proximo: {
+    width: '35%',
+    backgroundColor: '#d3d3d3',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  ProximoT: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  Anterior: {
+    width: '35%',
+    backgroundColor: '#d3d3d3',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 30,
+    alignItems: 'center',
+  },
+  AnteriorT: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  input: {
+  width: '80%',
+  backgroundColor: '#FFFFFF',
+  borderWidth: 1,
+  borderColor: '#CCCCCC',
+  borderRadius: 10,
+  padding: 15,
+  marginBottom: 10,
+  fontSize: 16,
+},
+
+cardAluno: {
+  width: '80%',
+  backgroundColor: '#FFFFFF',
+  padding: 15,
+  borderRadius: 10,
+  marginTop: 15,
+  borderWidth: 1,
+  borderColor: '#DDDDDD',
+},
+
+nomeAluno: {
+  fontSize: 20,
+  fontWeight: 'bold',
+  color: '#1565C0',
+  marginBottom: 5,
+},
+
+botaoEditar: {
+  backgroundColor: '#1976D2',
+  padding: 10,
+  borderRadius: 8,
+  marginTop: 10,
+  alignItems: 'center',
+},
+
+botaoRemover: {
+  backgroundColor: '#D32F2F',
+  padding: 10,
+  borderRadius: 8,
+  marginTop: 10,
+  alignItems: 'center',
+},
+botaoCancelar: {
+  width: '80%',
+  backgroundColor: '#777777',
+  padding: 15,
+  borderRadius: 10,
+  marginBottom: 15,
+  alignItems: 'center',
+},
+
+});
